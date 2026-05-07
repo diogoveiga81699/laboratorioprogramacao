@@ -1,24 +1,25 @@
-def build_prompt(text_chunk, language):
-    return f"""
-És um assistente especializado em normalização textual.
+def calculate_text_metrics(text):
+    words = text.split()
+    lines = text.splitlines()
+    characters = len(text)
 
-Tarefa:
-Normaliza o texto abaixo mantendo o significado original.
+    empty_lines = sum(1 for line in lines if not line.strip())
 
-Regras:
-- Mantém o idioma original: {language}
-- Corrige erros de formatação, espaçamento e pontuação
-- Reconstrói frases ou parágrafos quando necessário
-- Remove ruído textual evidente
-- Não inventes informação nova
-- Não resumas o conteúdo
-- Mantém o texto em plain text
-- Preserva nomes próprios, datas, números e entidades importantes
-
-Texto a normalizar:
-{text_chunk}
-""".strip()
+    return {
+        "characters": characters,
+        "words": len(words),
+        "lines": len(lines),
+        "empty_lines": empty_lines
+    }
 
 
-def build_all_prompts(chunks, language):
-    return [build_prompt(chunk, language) for chunk in chunks]
+def compare_metrics(raw_text, cleaned_text):
+    raw = calculate_text_metrics(raw_text)
+    cleaned = calculate_text_metrics(cleaned_text)
+
+    return {
+        "raw": raw,
+        "cleaned": cleaned,
+        "characters_removed": raw["characters"] - cleaned["characters"],
+        "empty_lines_removed": raw["empty_lines"] - cleaned["empty_lines"]
+    }
